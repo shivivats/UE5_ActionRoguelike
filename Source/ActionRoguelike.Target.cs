@@ -3,12 +3,12 @@
 using UnrealBuildTool;
 using System.Collections.Generic;
 
-public class UE5_ActionRoguelikeTarget : TargetRules
+public class ActionRoguelikeTarget : TargetRules
 {
-	public UE5_ActionRoguelikeTarget( TargetInfo Target) : base(Target)
+	public ActionRoguelikeTarget( TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
-		ExtraModuleNames.AddRange( new string[] { "UE5_ActionRoguelike" } );
+		ExtraModuleNames.AddRange( new string[] { "ActionRoguelike" } );
 	}
 }

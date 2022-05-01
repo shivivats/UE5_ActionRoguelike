@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "UE5_ActionRoguelikeGameModeBase.generated.h"
+#include "ActionRoguelikeGameModeBase.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UE5_ACTIONROGUELIKE_API AUE5_ActionRoguelikeGameModeBase : public AGameModeBase
+class ACTIONROGUELIKE_API AActionRoguelikeGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	

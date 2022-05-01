@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class UE5_ActionRoguelike : ModuleRules
+public class ActionRoguelike : ModuleRules
 {
-	public UE5_ActionRoguelike(ReadOnlyTargetRules Target) : base(Target)
+	public ActionRoguelike(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
