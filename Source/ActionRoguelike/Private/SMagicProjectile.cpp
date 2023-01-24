@@ -3,6 +3,7 @@
 
 #include "SMagicProjectile.h"
 #include "DrawDebugHelpers.h"
+#include "SAttributeComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -21,17 +22,31 @@ void ASMagicProjectile::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	SphereComp->OnComponentHit.AddDynamic(this, &ASMagicProjectile::OnHit);
+	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASMagicProjectile::OnBeginOverlap);
 }
 
-void ASMagicProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-                              FVector NormalImpulse, const FHitResult& Hit)
+void ASMagicProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+									   int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if(OtherActor!=GetInstigator())
+	if (OtherActor && OtherActor != GetInstigator())
 	{
+
+		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
+		if(AttributeComp)
+		{
+			AttributeComp->ApplyHealthChange(-20.f);
+
+			if(GetWorldTimerManager().IsTimerActive(TimerHandle_DestroyProjectile))
+			{
+				GetWorldTimerManager().ClearTimer(TimerHandle_DestroyProjectile);
+			}
+
+			GetWorldTimerManager().SetTimer(TimerHandle_DestroyProjectile, this, &ASMagicProjectile::DestroyProjectile, DestroyDelay);
+		}
+
 		DrawDebugSphere(GetWorld(), GetActorLocation(), 50.f, 12, FColor::Blue, 1.f, 0.f);
-		
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, Hit.Location, GetActorRotation());
+
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, SweepResult.ImpactPoint, GetActorRotation());
 
 		GetWorldTimerManager().SetTimer(TimerHandle_DestroyProjectile, this, &ASMagicProjectile::DestroyProjectile, DestroyDelay);
 	}
