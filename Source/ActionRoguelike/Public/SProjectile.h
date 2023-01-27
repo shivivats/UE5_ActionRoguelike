@@ -10,6 +10,8 @@
 class USphereComponent;
 class UProjectileMovementComponent;
 class UParticleSystemComponent;
+class UAudioComponent;
+class USoundBase;
 
 
 UCLASS()
@@ -28,8 +30,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UProjectileMovementComponent* MovementComp;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UParticleSystemComponent* EffectComp;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UAudioComponent* AudioLoopComp;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UAudioComponent* ImpactAudioComp;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	USoundBase* ImpactAudio;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

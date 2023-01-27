@@ -5,6 +5,8 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Components/AudioComponent.h"
+#include "Sound/SoundBase.h"
 
 // Sets default values
 ASProjectile::ASProjectile()
@@ -23,6 +25,9 @@ ASProjectile::ASProjectile()
 	MovementComp->InitialSpeed = 3000.f;
 	MovementComp->bRotationFollowsVelocity = true;
 	MovementComp->bInitialVelocityInLocalSpace = true;
+
+	AudioLoopComp = CreateDefaultSubobject<UAudioComponent>("AudioLoopComp");
+	AudioLoopComp->SetupAttachment(SphereComp);	
 }
 
 // Called when the game starts or when spawned
@@ -31,6 +36,9 @@ void ASProjectile::BeginPlay()
 	Super::BeginPlay();
 
 	SphereComp->IgnoreActorWhenMoving(GetInstigator(), true);
+
+	AudioLoopComp->Play();
+
 }
 
 // Called every frame

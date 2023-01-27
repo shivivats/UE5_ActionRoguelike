@@ -10,6 +10,8 @@
 ASMagicProjectile::ASMagicProjectile()
 {
 	DestroyDelay = 0.2f;
+
+	Damage = 20.0f;
 }
 
 // Called when the game starts or when spawned
@@ -30,11 +32,10 @@ void ASMagicProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 {
 	if (OtherActor && OtherActor != GetInstigator())
 	{
-
 		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
 		if(AttributeComp)
 		{
-			AttributeComp->ApplyHealthChange(-20.f);
+			AttributeComp->ApplyHealthChange(-1.0f * Damage);
 
 			if(GetWorldTimerManager().IsTimerActive(TimerHandle_DestroyProjectile))
 			{
@@ -47,6 +48,11 @@ void ASMagicProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 		DrawDebugSphere(GetWorld(), GetActorLocation(), 50.f, 12, FColor::Blue, 1.f, 0.f);
 
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, SweepResult.ImpactPoint, GetActorRotation());
+
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactAudio, GetActorLocation());
+
+		// shake the world - any cameras between 5 and 2000 away will be shaked
+		UGameplayStatics::PlayWorldCameraShake(GetWorld(), ImpactCameraShake, GetActorLocation(), 0.1f, 2000.0f);
 
 		GetWorldTimerManager().SetTimer(TimerHandle_DestroyProjectile, this, &ASMagicProjectile::DestroyProjectile, DestroyDelay);
 	}

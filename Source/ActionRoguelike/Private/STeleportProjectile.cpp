@@ -62,6 +62,8 @@ void ASTeleportProjectile::TeleportInstigator()
 
 	GetInstigator()->SetActorLocation(TeleportLocation);
 
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactAudio, TeleportLocation);
+
 	Destroy();
 }
 

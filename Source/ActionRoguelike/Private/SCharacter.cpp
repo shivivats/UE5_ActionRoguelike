@@ -11,6 +11,7 @@
 #include "SInteractionComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "SProjectile.h"
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets default values
@@ -38,6 +39,13 @@ ASCharacter::ASCharacter()
 	PrimaryAttackSpawnDelay = 0.2f;
 	BlackHoleAttackSpawnDelay = 0.2f;
 	TeleportAttackSpawnDelay = 0.2f;
+}
+
+void ASCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	AttributeComp->OnHealthChanged.AddDynamic(this, &ASCharacter::OnHealthChanged);
 }
 
 // Called when the game starts or when spawned
@@ -113,10 +121,13 @@ FRotator ASCharacter::GetProjectileRotation(FVector SpawnLocation)
 	return ProjectileRotation;
 }
 
-AActor* ASCharacter::SpawnProjectile(TSubclassOf<AActor> ProjectileClass, FVector SpawnLocation)
+AActor* ASCharacter::SpawnProjectile(TSubclassOf<AActor> ProjectileClass, FVector SpawnLocation, UParticleSystem* SpawnEffect)
 {
 	// First we get the rotation of the projectile from our own function
 	FRotator ProjectileRotation = GetProjectileRotation(SpawnLocation);
+
+	// before spawning a projectile we play the particle effect for casting it
+	UGameplayStatics::SpawnEmitterAttached(SpawnEffect, GetMesh(), FName("Muzzle_01"), GetMesh()->GetSocketLocation("Muzzle_01"), FRotator(), EAttachLocation::KeepWorldPosition);
 
 	// Here we actually spawn the projectile with the rotation we derived
 	FTransform SpawnTransform = FTransform(ProjectileRotation, SpawnLocation);
@@ -139,11 +150,11 @@ void ASCharacter::PrimaryAttack()
 
 void ASCharacter::PrimaryAttack_TimeElapsed()
 {
-	if(ensure(PrimaryProjectileClass))
+	if (ensure(PrimaryProjectileClass))
 	{
 		FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 
-		SpawnProjectile(PrimaryProjectileClass, HandLocation);
+		SpawnProjectile(PrimaryProjectileClass, HandLocation, PrimaryProjectileSpawnEffect);
 	}
 }
 
@@ -160,7 +171,7 @@ void ASCharacter::BlackHoleAttack_TimeElapsed()
 	{
 		FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 
-		SpawnProjectile(BlackHoleProjectileClass, HandLocation);
+		SpawnProjectile(BlackHoleProjectileClass, HandLocation, BlackHoleSpawnEffect);
 	}
 }
 
@@ -177,7 +188,7 @@ void ASCharacter::TeleportAttack_TimeElapsed()
 	{
 		FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 
-		SpawnProjectile(TeleportAttackProjectileClass, HandLocation);
+		SpawnProjectile(TeleportAttackProjectileClass, HandLocation, TeleportAttackSpawnEffect);
 	}
 }
 
@@ -187,6 +198,29 @@ void ASCharacter::PrimaryInteract()
 	{
 		InteractionComp->PrimaryInteract();
 	}
+}
+
+void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta)
+{
+	if(Delta < 0.0f)
+	{
+		// if damaged
+		GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
+
+
+		if (NewHealth <= 0.0f)
+		{
+			APlayerController* PC = Cast<APlayerController>(GetController());
+			DisableInput(PC);
+		}
+
+	}
+
+	if(NewHealth <= 0.0f && Delta < 0.0f)
+	{
+		APlayerController* PC = Cast<APlayerController>(GetController());
+		DisableInput(PC);
+	}	
 }
 
 // Called every frame

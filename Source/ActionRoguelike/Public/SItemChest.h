@@ -3,26 +3,27 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SGameplayInterface.h"
-#include "GameFramework/Actor.h"
+#include "SInteractable.h"
 #include "SItemChest.generated.h"
 
 class UStaticMeshComponent;
 
 UCLASS()
-class ACTIONROGUELIKE_API ASItemChest : public AActor, public ISGameplayInterface
+class ACTIONROGUELIKE_API ASItemChest : public ASInteractable
 {
 	GENERATED_BODY()
+
+public:
+
+	// Sets default values for this actor's properties
+	ASItemChest();
+
+private:
 
 	UPROPERTY(EditAnywhere)
 	float TargetPitch;
 
-	void Interact_Implementation(APawn* InstigatorPawn);
-
 protected:
-
-	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* BaseMesh;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* LidMesh;
@@ -30,11 +31,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	void Interact_Implementation(APawn* InstigatorPawn) override;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Sets default values for this actor's properties
-	ASItemChest();
 
 };
