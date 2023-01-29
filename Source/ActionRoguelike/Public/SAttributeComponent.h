@@ -49,5 +49,11 @@ public:
 	bool IsAlive() const;
 
 	UFUNCTION(BlueprintCallable)
-	float GetHealthMin();
+	bool IsFullHealth() const;
+
+	UFUNCTION(BlueprintCallable)
+	float GetHealthMax() const;
+
+	UFUNCTION(BlueprintCallable)
+	float GetHealthMin() const;
 };

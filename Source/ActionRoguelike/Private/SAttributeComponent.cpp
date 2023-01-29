@@ -13,25 +13,16 @@ USAttributeComponent::USAttributeComponent()
 
 bool USAttributeComponent::ApplyHealthChange(float Delta)
 {
-	// if heal and health already more than max, then no health change
-	if (Delta > 0 && Health >= HealthMax)
-	{
-		return false;
-	}
+	float OldHealth = Health;
 
-	// if damage and health already less than min, then no health change
-	if (Delta < 0 && Health <= HealthMin)
-	{
-		return false;
-	}
+	Health = FMath::Clamp(Health + Delta, HealthMin, HealthMax);
 
-	Health += Delta;
+	float ActualDelta = Health - OldHealth;
 
-	Health = FMath::Clamp(Health, HealthMin, HealthMax);
+	OnHealthChanged.Broadcast(nullptr, this, Health, ActualDelta);
 
-	OnHealthChanged.Broadcast(nullptr, this, Health, Delta);
-
-	return true;
+	// if the actual delta is 0 then we had no change so we return false
+	return ActualDelta != 0;
 }
 
 bool USAttributeComponent::IsAlive() const
@@ -39,7 +30,17 @@ bool USAttributeComponent::IsAlive() const
 	return Health > 0.0f;
 }
 
-float USAttributeComponent::GetHealthMin()
+bool USAttributeComponent::IsFullHealth() const
+{
+	return Health == HealthMax;
+}
+
+float USAttributeComponent::GetHealthMax() const
+{
+	return HealthMax;
+}
+
+float USAttributeComponent::GetHealthMin() const
 {
 	return HealthMin;
 }
