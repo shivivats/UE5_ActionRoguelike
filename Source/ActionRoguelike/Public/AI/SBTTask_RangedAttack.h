@@ -16,7 +16,17 @@ class ACTIONROGUELIKE_API USBTTask_RangedAttack : public UBTTaskNode
 	
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
+public:
+	
+	USBTTask_RangedAttack();
+
 protected:
+
+	UPROPERTY(EditAnywhere, Category = "AI")
+	float MaxBulletPitchSpread; // max bullet spread in degrees
+
+	UPROPERTY(EditAnywhere, Category = "AI")
+	float MaxBulletYawSpread; // max bullet spread in degrees
 
 	// edit defaults only doesnt work here, for AI we always use edit anywhere
 	UPROPERTY(EditAnywhere, Category="AI") 

@@ -32,10 +32,11 @@ void ASMagicProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 {
 	if (OtherActor && OtherActor != GetInstigator())
 	{
-		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
+		//USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
+		USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributes(OtherActor);
 		if(AttributeComp)
 		{
-			AttributeComp->ApplyHealthChange(-1.0f * Damage);
+			AttributeComp->ApplyHealthChange(GetInstigator(), -1.0f * Damage);
 
 			if(GetWorldTimerManager().IsTimerActive(TimerHandle_DestroyProjectile))
 			{

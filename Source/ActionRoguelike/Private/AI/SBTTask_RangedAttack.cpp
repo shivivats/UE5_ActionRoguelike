@@ -5,6 +5,15 @@
 #include "AIController.h"
 #include "GameFramework/Character.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "SAttributeComponent.h"
+
+
+USBTTask_RangedAttack::USBTTask_RangedAttack()
+{
+	MaxBulletPitchSpread = 4.0f;
+	MaxBulletYawSpread = 6.0f;
+}
+
 
 EBTNodeResult::Type USBTTask_RangedAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
@@ -29,8 +38,19 @@ EBTNodeResult::Type USBTTask_RangedAttack::ExecuteTask(UBehaviorTreeComponent& O
 			return EBTNodeResult::Failed;
 		}
 
+		// when our target has died
+		if (!USAttributeComponent::IsActorAlive(TargetActor))
+		{
+			return EBTNodeResult::Failed;
+		}
+
+		// these two statements are practically the same thing as find look at rotation
 		FVector Direction = TargetActor->GetActorLocation() - MuzzleLocation;
-		FRotator MuzzleRotation = Direction.Rotation(); // these two statements are practically the same thing as find look at rotation
+		FRotator MuzzleRotation = Direction.Rotation(); 
+
+		// add some bullet spread to the AI's shooting so it doesn't shoot like a laser
+		MuzzleRotation.Pitch += FMath::RandRange(0.0f, MaxBulletPitchSpread);
+		MuzzleRotation.Yaw += FMath::RandRange(-MaxBulletYawSpread, MaxBulletYawSpread);
 
 		FActorSpawnParameters Params;
 		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
