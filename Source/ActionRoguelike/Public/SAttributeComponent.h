@@ -65,4 +65,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	bool Kill(AActor* Instigator);
+
+	bool IsLowHealth(float LowHealthThreshold);
 };
