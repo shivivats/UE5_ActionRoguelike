@@ -11,20 +11,22 @@ void ASAIController::BeginPlay()
 {
 
 	Super::BeginPlay();
-
-	RunBehaviorTree(BehaviorTree);
+	if(ensureMsgf(BehaviorTree, TEXT("BehaviourTree is nullptr! Please set it in the AI Controller")))
+	{
+		RunBehaviorTree(BehaviorTree);
+	}
 
 	// Placeholder code: manually grab the player character and put his location in here
 	// We'll update this to pawn sensing later
 
-	APawn* MyPawn = UGameplayStatics::GetPlayerPawn(this, 0);
-	if(MyPawn)
-	{
-		// Later expose the KeyName string to blueprnt as well so we can change it more easily
-		GetBlackboardComponent()->SetValueAsVector("MoveToLocation", MyPawn->GetActorLocation());
+	//APawn* MyPawn = UGameplayStatics::GetPlayerPawn(this, 0);
+	//if(MyPawn)
+	//{
+	//	// Later expose the KeyName string to blueprnt as well so we can change it more easily
+	//	GetBlackboardComponent()->SetValueAsVector("MoveToLocation", MyPawn->GetActorLocation());
 
-		GetBlackboardComponent()->SetValueAsObject("TargetActor", MyPawn);
+	//	GetBlackboardComponent()->SetValueAsObject("TargetActor", MyPawn);
 
-	}
-	
+	//}
+	//
 }

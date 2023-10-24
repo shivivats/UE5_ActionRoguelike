@@ -6,7 +6,8 @@
 #include "AIController.h"
 #include "SAIController.generated.h"
 
-UBehaviorTree;
+
+class UBehaviorTree;
 
 /**
  * 
@@ -22,6 +23,4 @@ class ACTIONROGUELIKE_API ASAIController : public AAIController
 	UBehaviorTree* BehaviorTree;
 
 	virtual void BeginPlay() override;
-
-	
 };
