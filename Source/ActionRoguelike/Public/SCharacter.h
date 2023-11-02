@@ -119,6 +119,10 @@ protected:
 
 	virtual void PostInitializeComponents() override;
 
+	UPROPERTY(VisibleAnywhere, Category = "Effects")
+	FName TimeToHitParamName;
+	
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

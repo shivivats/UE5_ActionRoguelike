@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "SAICharacter.generated.h"
 
+class USAttributeComponent;
 class UPawnSensingComponent;
 
 UCLASS()
@@ -19,6 +20,11 @@ public:
 	ASAICharacter();
 protected:
 
+	void SetTargetActor(AActor* NewActor);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USAttributeComponent* AttributeComp;
+
 	UPROPERTY(EditAnywhere, Category = "AI")
 	FName TargetActorKey;
 
@@ -29,5 +35,11 @@ protected:
 
 	UFUNCTION()
 	void OnPawnSeen(APawn* Pawn);
+
+	UFUNCTION()
+	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
+
+	UPROPERTY(VisibleAnywhere, Category = "Effects")
+	FName TimeToHitParamName;
 };
 

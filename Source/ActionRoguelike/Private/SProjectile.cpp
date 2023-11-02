@@ -27,7 +27,7 @@ ASProjectile::ASProjectile()
 	MovementComp->bInitialVelocityInLocalSpace = true;
 
 	AudioLoopComp = CreateDefaultSubobject<UAudioComponent>("AudioLoopComp");
-	AudioLoopComp->SetupAttachment(SphereComp);	
+	AudioLoopComp->SetupAttachment(RootComponent);	
 }
 
 // Called when the game starts or when spawned

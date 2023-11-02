@@ -7,18 +7,25 @@
 #include "SBTTaskRangedAttack.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class ACTIONROGUELIKE_API USBTTaskRangedAttack : public UBTTaskNode
 {
 	GENERATED_BODY()
 
-	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory);
+	USBTTaskRangedAttack();
+
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory);
 
 protected:
 
-	UPROPERTY(EditAnywhere, Category="AI")
+	UPROPERTY(EditAnywhere, Category = "AI")
 	TSubclassOf<AActor> ProjectileClass;
-	
+
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	float MaxBulletSpreadPitch;
+
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	float MaxBulletSpreadYaw;
 };

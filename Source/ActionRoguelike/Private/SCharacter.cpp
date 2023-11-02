@@ -39,6 +39,8 @@ ASCharacter::ASCharacter()
 	PrimaryAttackSpawnDelay = 0.2f;
 	BlackHoleAttackSpawnDelay = 0.2f;
 	TeleportAttackSpawnDelay = 0.2f;
+
+	TimeToHitParamName = "TimeToHit";
 }
 
 void ASCharacter::PostInitializeComponents()
@@ -205,7 +207,7 @@ void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent*
 	if(Delta < 0.0f)
 	{
 		// if damaged
-		GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
+		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
 
 
 		if (NewHealth <= 0.0f)
@@ -215,12 +217,6 @@ void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent*
 		}
 
 	}
-
-	if(NewHealth <= 0.0f && Delta < 0.0f)
-	{
-		APlayerController* PC = Cast<APlayerController>(GetController());
-		DisableInput(PC);
-	}	
 }
 
 // Called every frame

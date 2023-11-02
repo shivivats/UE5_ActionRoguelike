@@ -3,17 +3,34 @@
 
 #include "AI/SAICharacter.h"
 
-#include "ActionRoguelike/AI/SAIController.h"
+#include "BrainComponent.h"
+#include "SAttributeComponent.h"
+#include "SAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Perception/PawnSensingComponent.h"
 
 // Sets default values
 ASAICharacter::ASAICharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensingComp");
+
+	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
+
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned; // make sure the AI gets a controller assigned to it by default
+
+	TimeToHitParamName = "TimeToHit";
+}
+
+void ASAICharacter::SetTargetActor(AActor* NewActor)
+{
+	ASAIController* AIC = Cast<ASAIController>(GetController());
+	if (AIC)
+	{
+		AIC->GetBlackboardComponent()->SetValueAsObject(TargetActorKey, NewActor);
+	}
 
 }
 
@@ -22,20 +39,49 @@ void ASAICharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	PawnSensingComp->OnSeePawn.AddDynamic(this, &ASAICharacter::OnPawnSeen);
+
+	AttributeComp->OnHealthChanged.AddDynamic(this, &ASAICharacter::OnHealthChanged);
 }
 
 void ASAICharacter::OnPawnSeen(APawn* Pawn)
 {
-	ASAIController* AIC = Cast<ASAIController>(GetController());
-	if(AIC)
+
+	SetTargetActor(Pawn);
+
+	DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::White, 4.0f, true);
+
+}
+
+void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta)
+{
+	if (Delta < 0.0f) // if took damage
 	{
-		UBlackboardComponent* BBComp = AIC->GetBlackboardComponent();
+		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
 
-		BBComp->SetValueAsObject(TargetActorKey, Pawn);
+		if (InstigatorActor == this)
+		{
+			SetTargetActor(InstigatorActor); // if we got hit by another actor (even an AI), we set the target to that
+		}
 
-		DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::White, 4.0f, true);
+		if (NewHealth <= AttributeComp->GetMinHealth()) // if dead
+		{
+			// stop Behaviour Tree
+			AAIController* AIC = Cast<AAIController>(GetController());
+			if (AIC)
+			{
+				// brain component is like the parent of the behaviour tree
+				AIC->GetBrainComponent()->StopLogic("Killed");
+			}
 
+			// ragdoll: we set all of the mesh's bones to simulate physies and thus they're pulled down by gravity and ragdoll
+			GetMesh()->SetAllBodiesSimulatePhysics(true);
+
+			// theres an issue here with the collision profile because the character mesh collision profile does not interact with collision (only queries)
+			// so we need to change the collision profile here to the Ragdoll collision profile
+			GetMesh()->SetCollisionProfileName("Ragdoll");
+
+			// set lifespan so we show the ragdoll for a bit before deleting
+			SetLifeSpan(10.0f);
+		}
 	}
-
-
 }

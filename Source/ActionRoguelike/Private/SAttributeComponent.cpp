@@ -11,27 +11,39 @@ USAttributeComponent::USAttributeComponent()
 	HealthMax = 100.f;
 }
 
-bool USAttributeComponent::ApplyHealthChange(float Delta)
+USAttributeComponent* USAttributeComponent::GetAttributeComp(AActor* FromActor)
 {
-	// if heal and health already more than max, then no health change
-	if (Delta > 0 && Health >= HealthMax)
+	if (FromActor)
 	{
-		return false;
+		return Cast<USAttributeComponent>(FromActor->GetComponentByClass((USAttributeComponent::StaticClass())));
 	}
 
-	// if damage and health already less than min, then no health change
-	if (Delta < 0 && Health <= HealthMin)
+	return nullptr;
+
+}
+
+bool USAttributeComponent::IsActorAlive(AActor* FromActor)
+{
+	USAttributeComponent* AttributeComp = GetAttributeComp(FromActor);
+	if(AttributeComp)
 	{
-		return false;
+		return AttributeComp->IsAlive();
 	}
 
-	Health += Delta;
+	return false;
+}
 
-	Health = FMath::Clamp(Health, HealthMin, HealthMax);
+bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
+{
+	float OldHealth = Health;
 
-	OnHealthChanged.Broadcast(nullptr, this, Health, Delta);
+	Health = FMath::Clamp(Health + Delta, HealthMin, HealthMax);
 
-	return true;
+	float ActualDelta = Health - OldHealth;
+
+	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
+
+	return ActualDelta != 0;
 }
 
 bool USAttributeComponent::IsAlive() const
@@ -39,7 +51,8 @@ bool USAttributeComponent::IsAlive() const
 	return Health > 0.0f;
 }
 
-float USAttributeComponent::GetHealthMin()
+float USAttributeComponent::GetMinHealth()
 {
 	return HealthMin;
 }
+

@@ -14,24 +14,30 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChanged, AActor*, Instiga
 // void 
 
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class ACTIONROGUELIKE_API USAttributeComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	USAttributeComponent();
 
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	static USAttributeComponent* GetAttributeComp(AActor* FromActor);
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes", meta = (DisplayName = "IsAlive"))
+	static bool IsActorAlive(AActor* FromActor);
+
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Attributes|Health")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes|Health")
 	float Health;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes|Health")
 	float HealthMin;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Attributes|Health")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes|Health")
 	float HealthMax;
 
 
@@ -42,12 +48,12 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
 
-	UFUNCTION(BlueprintCallable, Category="Attributes")
-	bool ApplyHealthChange(float Delta);
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	bool ApplyHealthChange(AActor* InstigatorActor, float Delta);
 
 	UFUNCTION(BlueprintCallable)
 	bool IsAlive() const;
 
 	UFUNCTION(BlueprintCallable)
-	float GetHealthMin();
+	float GetMinHealth();
 };

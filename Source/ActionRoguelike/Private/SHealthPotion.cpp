@@ -20,7 +20,7 @@ void ASHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 
 	if(AttributeComp)
 	{
-		if(AttributeComp->ApplyHealthChange(HealAmount))
+		if(AttributeComp->ApplyHealthChange(this, HealAmount))
 		{
 			StartReactivationTimer();
 		}

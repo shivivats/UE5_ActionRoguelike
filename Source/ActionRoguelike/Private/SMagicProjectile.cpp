@@ -27,15 +27,14 @@ void ASMagicProjectile::PostInitializeComponents()
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASMagicProjectile::OnBeginOverlap);
 }
 
-void ASMagicProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-									   int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ASMagicProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor && OtherActor != GetInstigator())
 	{
 		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
 		if(AttributeComp)
 		{
-			AttributeComp->ApplyHealthChange(-1.0f * Damage);
+			AttributeComp->ApplyHealthChange(GetInstigator(), -1.0f * Damage);
 
 			if(GetWorldTimerManager().IsTimerActive(TimerHandle_DestroyProjectile))
 			{
