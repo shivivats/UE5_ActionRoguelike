@@ -43,6 +43,11 @@ ASCharacter::ASCharacter()
 	TimeToHitParamName = "TimeToHit";
 }
 
+void ASCharacter::HealSelf(float Amount) /* = 100.0f*/
+{
+	AttributeComp->ApplyHealthChange(this, Amount);
+}
+
 void ASCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
@@ -73,7 +78,6 @@ void ASCharacter::MoveRight(float Value)
 	ControlRot.Roll = 0;
 
 	FVector ControlRightVector = FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y);
-
 
 	AddMovementInput(ControlRightVector * Value);
 }

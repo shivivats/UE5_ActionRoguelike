@@ -15,6 +15,19 @@ ASGameModeBase::ASGameModeBase()
 	SpawnTimerInterval = 2.0f;
 }
 
+void ASGameModeBase::KillAllBots()
+{
+	for (ASAICharacter* Bot : TActorRange<ASAICharacter>(GetWorld()))
+	{
+		USAttributeComponent* BotAttributeComp = USAttributeComponent::GetAttributeComp(Bot);
+		if (ensure(BotAttributeComp) && BotAttributeComp->IsAlive())
+		{
+			BotAttributeComp->Kill(this); // @fixme: Maybe pass in the player for kill credit?
+		}
+	}
+}
+
+
 void ASGameModeBase::StartPlay()
 {
 	Super::StartPlay();

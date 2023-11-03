@@ -33,8 +33,17 @@ bool USAttributeComponent::IsActorAlive(AActor* FromActor)
 	return false;
 }
 
+bool USAttributeComponent::Kill(AActor* InstigatorActor)
+{
+	return ApplyHealthChange(InstigatorActor, -HealthMax);
+}
+
 bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
 {
+	if(!GetOwner()->CanBeDamaged()) // god mode check
+	{
+		return false;
+	}
 	float OldHealth = Health;
 
 	Health = FMath::Clamp(Health + Delta, HealthMin, HealthMax);

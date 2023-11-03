@@ -44,5 +44,10 @@ public:
 
 	ASGameModeBase();
 
+	UFUNCTION(Exec)
+	void KillAllBots();
+
+	
+
 	virtual void StartPlay() override;
 };
