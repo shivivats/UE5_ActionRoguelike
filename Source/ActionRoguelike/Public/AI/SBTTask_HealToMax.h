@@ -4,28 +4,22 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "SBTTaskRangedAttack.generated.h"
+#include "SBTTask_HealToMax.generated.h"
 
 /**
- *
+ * 
  */
 UCLASS()
-class ACTIONROGUELIKE_API USBTTaskRangedAttack : public UBTTaskNode
+class ACTIONROGUELIKE_API USBTTask_HealToMax : public UBTTaskNode
 {
 	GENERATED_BODY()
 
-	USBTTaskRangedAttack();
+	USBTTask_HealToMax();
 
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
 protected:
 
-	UPROPERTY(EditAnywhere, Category = "AI")
-	TSubclassOf<AActor> ProjectileClass;
-
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	float MaxBulletSpreadPitch;
-
-	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	float MaxBulletSpreadYaw;
+	float HealTo;
 };

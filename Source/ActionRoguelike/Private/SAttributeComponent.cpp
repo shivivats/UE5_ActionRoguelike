@@ -65,3 +65,13 @@ float USAttributeComponent::GetMinHealth()
 	return HealthMin;
 }
 
+float USAttributeComponent::GetMaxHealth()
+{
+	return HealthMax;
+}
+
+float USAttributeComponent::GetHealth()
+{
+	return Health;
+}
+

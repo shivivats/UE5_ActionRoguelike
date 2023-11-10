@@ -43,7 +43,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes|Health")
 	float HealthMax;
 
-
 	// Stamina, Strength, ...
 
 public:
@@ -59,4 +58,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float GetMinHealth();
+
+	UFUNCTION(BlueprintCallable)
+	float GetMaxHealth();
+
+	UFUNCTION(BlueprintCallable)
+	float GetHealth();
 };
