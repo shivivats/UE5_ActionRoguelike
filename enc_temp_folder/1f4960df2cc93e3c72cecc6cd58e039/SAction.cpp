@@ -39,11 +39,6 @@ UWorld* USAction::GetWorld() const
 
 bool USAction::CanStart_Implementation(AActor* Instigator)
 {
-	if(bIsRunning)
-	{
-		return false;
-	}
-
 	USActionComponent* Comp = GetOwningComponent();
 
 	if (Comp->ActiveGameplayTags.HasAny(BlockedTags))

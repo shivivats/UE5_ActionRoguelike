@@ -3,10 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "UObject/NoExportTypes.h"
 #include "SAction.generated.h"
 
 class UWorld;
+class USActionComponent;
 
 /**
  * 
@@ -28,7 +30,16 @@ protected:
 	/* Action can only start if OwningActor has none of these tags applied */
 	UPROPERTY(EditDefaultsOnly, Category="Tags")
 	FGameplayTagContainer BlockedTags;
+
+	bool bIsRunning;
+
 public:
+
+	UFUNCTION(BlueprintCallable, Category="Action")
+	bool IsRunning();
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Action")
+	bool CanStart(AActor* Instigator);
 
 	/* Action nickname to start/stop without a reference to the object */
 	UPROPERTY(EditDefaultsOnly, Category = "Action")
