@@ -4,6 +4,7 @@
 #include "SMagicProjectile.h"
 #include "DrawDebugHelpers.h"
 #include "SAttributeComponent.h"
+#include "SGameplayFunctionLibrary.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -32,7 +33,8 @@ void ASMagicProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	if (OtherActor && OtherActor != GetInstigator())
 	{
 		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
-		if(AttributeComp)
+		// Apply Damage & Impulse - use the static fn we have instead of just checking if AttributeComp is valid
+		if (USGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, Damage, SweepResult))
 		{
 			AttributeComp->ApplyHealthChange(GetInstigator(), -1.0f * Damage);
 

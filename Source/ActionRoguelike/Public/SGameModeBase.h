@@ -20,7 +20,7 @@ class ACTIONROGUELIKE_API ASGameModeBase : public AGameModeBase
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, Category="AI")
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	UCurveFloat* DifficultyCurve;
 
 	FTimerHandle TimerHandle_SpawnBots;
@@ -34,20 +34,22 @@ protected:
 	UFUNCTION()
 	void OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
 
-	UPROPERTY(EditDefaultsOnly, Category="AI")
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	TSubclassOf<AActor> MinionClass;
+	UFUNCTION()
+	void RespawnPlayerElapsed(AController* Controller);
 
 public:
 
-	UPROPERTY(EditDefaultsOnly, Category="AI")
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	UEnvQuery* SpawnBotQuery;
+
+	virtual void OnActorKilled(AActor* VictimActor, AActor* Killer);
 
 	ASGameModeBase();
 
 	UFUNCTION(Exec)
 	void KillAllBots();
-
-	
 
 	virtual void StartPlay() override;
 };

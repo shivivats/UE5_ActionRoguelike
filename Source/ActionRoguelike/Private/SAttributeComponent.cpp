@@ -2,6 +2,11 @@
 
 
 #include "SAttributeComponent.h"
+#include "SGameModeBase.h"
+
+
+static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("su.DamageMultiplier"), 1.0f, TEXT("Global Damage Modifier for Attribute Component."), ECVF_Cheat); //marking it as a cheat wont include it in the final build which is good for testing purposes
+
 
 // Sets default values for this component's properties
 USAttributeComponent::USAttributeComponent()
@@ -25,7 +30,7 @@ USAttributeComponent* USAttributeComponent::GetAttributeComp(AActor* FromActor)
 bool USAttributeComponent::IsActorAlive(AActor* FromActor)
 {
 	USAttributeComponent* AttributeComp = GetAttributeComp(FromActor);
-	if(AttributeComp)
+	if (AttributeComp)
 	{
 		return AttributeComp->IsAlive();
 	}
@@ -40,10 +45,18 @@ bool USAttributeComponent::Kill(AActor* InstigatorActor)
 
 bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
 {
-	if(!GetOwner()->CanBeDamaged()) // god mode check
+	if (!GetOwner()->CanBeDamaged() && Delta < 0.0f) // CanBeDamaged is a god mode check
 	{
 		return false;
 	}
+
+	if (Delta < 0.f)
+	{
+		float DamageMultiplier = CVarDamageMultiplier.GetValueOnGameThread();
+
+		Delta *= DamageMultiplier;
+	}
+
 	float OldHealth = Health;
 
 	Health = FMath::Clamp(Health + Delta, HealthMin, HealthMax);

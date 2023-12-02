@@ -10,6 +10,8 @@
 #include "Blueprint/UserWidget.h"
 #include "Perception/PawnSensingComponent.h"
 #include "UI/SWorldUserWidget.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 ASAICharacter::ASAICharacter()
@@ -22,6 +24,9 @@ ASAICharacter::ASAICharacter()
 	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned; // make sure the AI gets a controller assigned to it by default
+
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
+	GetMesh()->SetGenerateOverlapEvents(true);
 
 	TimeToHitParamName = "TimeToHit";
 }
@@ -92,6 +97,9 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 			// theres an issue here with the collision profile because the character mesh collision profile does not interact with collision (only queries)
 			// so we need to change the collision profile here to the Ragdoll collision profile
 			GetMesh()->SetCollisionProfileName("Ragdoll");
+
+			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			GetCharacterMovement()->DisableMovement();
 
 			// set lifespan so we show the ragdoll for a bit before deleting
 			SetLifeSpan(10.0f);
