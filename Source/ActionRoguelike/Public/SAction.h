@@ -48,7 +48,7 @@ public:
 	UFUNCTION(BlueprintNativeEvent, Category="Action")
 	void StartAction(AActor* Instigator);
 
-	UFUNCTION(BlueprintNativeEvent, Category = "Action")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Action")
 	void StopAction(AActor* Instigator);
 
 	UWorld* GetWorld() const override; // we override this to get access to it in blueprints

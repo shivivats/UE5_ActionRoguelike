@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "SProjectile.h"
 #include "SMagicProjectile.generated.h"
 
@@ -12,8 +13,8 @@ UCLASS()
 class ACTIONROGUELIKE_API ASMagicProjectile : public ASProjectile
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ASMagicProjectile();
 
@@ -30,10 +31,14 @@ protected:
 	UParticleSystem* HitEffect;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ability")
-		float DestroyDelay;
+	float DestroyDelay;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ability")
-		float Damage;
+	float Damage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	FGameplayTag ParryTag;
+
 
 	FTimerHandle TimerHandle_DestroyProjectile;
 
@@ -42,7 +47,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability|Shake")
 	TSubclassOf<UCameraShakeBase> ImpactCameraShake;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 };

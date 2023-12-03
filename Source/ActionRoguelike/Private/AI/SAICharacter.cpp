@@ -4,6 +4,7 @@
 #include "AI/SAICharacter.h"
 
 #include "BrainComponent.h"
+#include "SActionComponent.h"
 #include "SAttributeComponent.h"
 #include "SAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -22,6 +23,8 @@ ASAICharacter::ASAICharacter()
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensingComp");
 
 	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
+
+	ActionComp = CreateDefaultSubobject<USActionComponent>("ActionComp");
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned; // make sure the AI gets a controller assigned to it by default
 
