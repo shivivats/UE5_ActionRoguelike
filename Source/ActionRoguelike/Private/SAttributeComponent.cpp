@@ -11,26 +11,15 @@ USAttributeComponent::USAttributeComponent()
 	HealthMax = 100.f;
 }
 
-bool USAttributeComponent::Kill(AActor* Instigator)
+bool USAttributeComponent::ApplyHealthChange(float Delta)
 {
-	return ApplyHealthChange(Instigator, -1 * GetHealthMax());
-}
-
-bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
-{
-	// if the owner can't be damaged then return false (this implementation is available in actor by default)
-	if(!GetOwner()->CanBeDamaged()) 
-	{
-		return false;
-	}
-
 	float OldHealth = Health;
 
 	Health = FMath::Clamp(Health + Delta, HealthMin, HealthMax);
 
 	float ActualDelta = Health - OldHealth;
 
-	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
+	OnHealthChanged.Broadcast(nullptr, this, Health, ActualDelta);
 
 	// if the actual delta is 0 then we had no change so we return false
 	return ActualDelta != 0;
@@ -54,27 +43,4 @@ float USAttributeComponent::GetHealthMax() const
 float USAttributeComponent::GetHealthMin() const
 {
 	return HealthMin;
-}
-
-
-USAttributeComponent* USAttributeComponent::GetAttributes(AActor* FromActor)
-{
-	if (FromActor)
-	{
-		return FromActor->FindComponentByClass<USAttributeComponent>();
-	}
-
-	return nullptr;
-}
-
-bool USAttributeComponent::IsActorAlive(AActor* Actor)
-{
-	USAttributeComponent* AttributeComp = GetAttributes(Actor);
-
-	if(AttributeComp)
-	{
-		return AttributeComp->IsAlive();
-	}
-	
-	return false; // default response is dead
 }

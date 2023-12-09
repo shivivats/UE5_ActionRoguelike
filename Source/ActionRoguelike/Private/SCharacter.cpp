@@ -215,8 +215,7 @@ void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent*
 
 		if (NewHealth <= 0.0f)
 		{
-			//APlayerController* PC = Cast<APlayerController>(GetController());
-			APlayerController* PC = GetController<APlayerController>();
+			APlayerController* PC = Cast<APlayerController>(GetController());
 			DisableInput(PC);
 		}
 
@@ -224,8 +223,7 @@ void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent*
 
 	if(NewHealth <= 0.0f && Delta < 0.0f)
 	{
-		//APlayerController* PC = Cast<APlayerController>(GetController());
-		APlayerController* PC = GetController<APlayerController>();
+		APlayerController* PC = Cast<APlayerController>(GetController());
 		DisableInput(PC);
 	}	
 }
@@ -254,10 +252,5 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("TeleportAttack", IE_Pressed, this, &ASCharacter::TeleportAttack);
 
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ASCharacter::PrimaryInteract);
-}
-
-void ASCharacter::HealSelf(float Amount /* = 100 */)
-{
-	AttributeComp->ApplyHealthChange(this, Amount);
 }
 

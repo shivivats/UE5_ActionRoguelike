@@ -8,7 +8,6 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "SAttributeComponent.h"
 #include "BrainComponent.h"
-#include "SWorldUserWidget.h"
 
 // Sets default values
 ASAICharacter::ASAICharacter()
@@ -18,8 +17,6 @@ ASAICharacter::ASAICharacter()
 	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
-
-	TimeToHitParameterName = "TimeToHit";
 }
 
 void ASAICharacter::PostInitializeComponents()
@@ -33,39 +30,25 @@ void ASAICharacter::PostInitializeComponents()
 
 void ASAICharacter::OnPawnSeen(APawn* Pawn)
 {
-	SetTargetActor(Pawn);
+	AAIController* AIC = Cast<AAIController>(GetController());
+	if(AIC)
+	{
+		UBlackboardComponent* BBComp = AIC->GetBlackboardComponent();
+		BBComp->SetValueAsObject("TargetActor", Pawn);
 
-	DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::White, 4.0f, true);
+		DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::White, 4.0f, true);
+	}
 }
 
 void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta)
 {
 	if(Delta < 0.0f)
 	{
-		if (InstigatorActor != this)
-		{
-			SetTargetActor(InstigatorActor); // if someone damaged the AI then it sets them as our target
-		}
-
-		// spawn widget on damage taken if widget doesn't already exist
-		if(ActiveHealthBar == nullptr)
-		{
-			ActiveHealthBar = CreateWidget<USWorldUserWidget>(GetWorld(), HealthBarWidgetClass); // set world as the owner here, bc that's a suitable one that works for us
-			if(ActiveHealthBar)
-			{
-				ActiveHealthBar->AttachedActor = this;
-
-				ActiveHealthBar->AddToViewport();
-			}
-		}
-		// flash the ai character on hit just like the player
-		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParameterName, GetWorld()->TimeSeconds);
-
+		
 		if (NewHealth <= 0.0f) // now we have just died
 		{
 			// stop behaviour tree
-			//AAIController* AIC = Cast<AAIController>(GetController());
-			AAIController* AIC = GetController<AAIController>();
+			AAIController* AIC = Cast<AAIController>(GetController());
 			if (AIC)
 			{
 				AIC->GetBrainComponent()->StopLogic("Killed"); // brain component is the superclass of behaviour tree basically
@@ -81,15 +64,5 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 			// set lifespan to destroy this actor
 			SetLifeSpan(10.0f);
 		}
-	}
-}
-
-void ASAICharacter::SetTargetActor(AActor* NewTarget)
-{
-	//AAIController* AIC = Cast<AAIController>(GetController());
-	AAIController* AIC = GetController<AAIController>();
-	if (AIC)
-	{
-		AIC->GetBlackboardComponent()->SetValueAsObject("TargetActor", NewTarget);
 	}
 }

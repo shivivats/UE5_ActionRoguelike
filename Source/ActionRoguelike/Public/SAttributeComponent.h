@@ -43,7 +43,7 @@ public:
 	FOnHealthChanged OnHealthChanged;
 
 	UFUNCTION(BlueprintCallable, Category="Attributes")
-	bool ApplyHealthChange(AActor* InstigatorActor, float Delta);
+	bool ApplyHealthChange(float Delta);
 
 	UFUNCTION(BlueprintCallable)
 	bool IsAlive() const;
@@ -56,13 +56,4 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float GetHealthMin() const;
-
-	UFUNCTION(BlueprintCallable, Category = "Attributes")
-	static USAttributeComponent* GetAttributes(AActor* FromActor);
-
-	UFUNCTION(BlueprintCallable, Category = "Attributes", meta = (DisplayName= "IsAlive")) // we make it show as "is alive" in the editor
-	static bool IsActorAlive(AActor* Actor);
-
-	UFUNCTION(BlueprintCallable, Category = "Attributes")
-	bool Kill(AActor* Instigator);
 };
