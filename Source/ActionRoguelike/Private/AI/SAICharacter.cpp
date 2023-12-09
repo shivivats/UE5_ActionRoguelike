@@ -32,6 +32,13 @@ ASAICharacter::ASAICharacter()
 	GetMesh()->SetGenerateOverlapEvents(true);
 
 	TimeToHitParamName = "TimeToHit";
+
+	KillCredits = 10.f;
+}
+
+float ASAICharacter::GetKillCredits()
+{
+	return KillCredits;
 }
 
 void ASAICharacter::SetTargetActor(AActor* NewActor)

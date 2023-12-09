@@ -21,6 +21,9 @@ class ACTIONROGUELIKE_API ASAICharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ASAICharacter();
+
+	float GetKillCredits();
+
 protected:
 
 	void SetTargetActor(AActor* NewActor);
@@ -53,5 +56,8 @@ protected:
 
 	UPROPERTY()
 	USWorldUserWidget* ActiveHealthBar;
+
+	UPROPERTY(EditDefaultsOnly, Category="Credits")
+	float KillCredits;
 };
 

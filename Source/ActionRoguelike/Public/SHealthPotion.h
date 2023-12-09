@@ -23,5 +23,7 @@ protected:
 	float HealAmount;
 
 	void Interact_Implementation(APawn* InstigatorPawn) override;
-	
+
+	UPROPERTY(EditDefaultsOnly)
+	int32 CreditCost;
 };
