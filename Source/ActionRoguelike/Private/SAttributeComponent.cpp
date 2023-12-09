@@ -16,11 +16,6 @@ bool USAttributeComponent::Kill(AActor* Instigator)
 	return ApplyHealthChange(Instigator, -1 * GetHealthMax());
 }
 
-bool USAttributeComponent::IsLowHealth(float LowHealthThreshold)
-{
-	return (Health<=LowHealthThreshold);
-}
-
 bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
 {
 	// if the owner can't be damaged then return false (this implementation is available in actor by default)
