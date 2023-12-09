@@ -2,6 +2,11 @@
 
 
 #include "SAttributeComponent.h"
+#include "SGameModeBase.h"
+
+
+static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("su.DamageMultiplier"), 1.0f, TEXT("Global Damage Modifier for Attribute Component."), ECVF_Cheat); //marking it as a cheat wont include it in the final build which is good for testing purposes
+
 
 // Sets default values for this component's properties
 USAttributeComponent::USAttributeComponent()
@@ -11,27 +16,56 @@ USAttributeComponent::USAttributeComponent()
 	HealthMax = 100.f;
 }
 
-bool USAttributeComponent::ApplyHealthChange(float Delta)
+USAttributeComponent* USAttributeComponent::GetAttributeComp(AActor* FromActor)
 {
-	// if heal and health already more than max, then no health change
-	if (Delta > 0 && Health >= HealthMax)
+	if (FromActor)
+	{
+		return Cast<USAttributeComponent>(FromActor->GetComponentByClass((USAttributeComponent::StaticClass())));
+	}
+
+	return nullptr;
+
+}
+
+bool USAttributeComponent::IsActorAlive(AActor* FromActor)
+{
+	USAttributeComponent* AttributeComp = GetAttributeComp(FromActor);
+	if (AttributeComp)
+	{
+		return AttributeComp->IsAlive();
+	}
+
+	return false;
+}
+
+bool USAttributeComponent::Kill(AActor* InstigatorActor)
+{
+	return ApplyHealthChange(InstigatorActor, -HealthMax);
+}
+
+bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
+{
+	if (!GetOwner()->CanBeDamaged() && Delta < 0.0f) // CanBeDamaged is a god mode check
 	{
 		return false;
 	}
 
-	// if damage and health already less than min, then no health change
-	if (Delta < 0 && Health <= HealthMin)
+	if (Delta < 0.f)
 	{
-		return false;
+		float DamageMultiplier = CVarDamageMultiplier.GetValueOnGameThread();
+
+		Delta *= DamageMultiplier;
 	}
 
-	Health += Delta;
+	float OldHealth = Health;
 
-	Health = FMath::Clamp(Health, HealthMin, HealthMax);
+	Health = FMath::Clamp(Health + Delta, HealthMin, HealthMax);
 
-	OnHealthChanged.Broadcast(nullptr, this, Health, Delta);
+	float ActualDelta = Health - OldHealth;
 
-	return true;
+	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
+
+	return ActualDelta != 0;
 }
 
 bool USAttributeComponent::IsAlive() const
@@ -39,7 +73,18 @@ bool USAttributeComponent::IsAlive() const
 	return Health > 0.0f;
 }
 
-float USAttributeComponent::GetHealthMin()
+float USAttributeComponent::GetMinHealth()
 {
 	return HealthMin;
 }
+
+float USAttributeComponent::GetMaxHealth()
+{
+	return HealthMax;
+}
+
+float USAttributeComponent::GetHealth()
+{
+	return Health;
+}
+

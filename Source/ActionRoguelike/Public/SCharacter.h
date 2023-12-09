@@ -13,76 +13,36 @@ class USInteractionComponent;
 class UAnimMontage;
 class ASProjectile;
 class USAttributeComponent;
+class USActionComponent;
 
 UCLASS()
 class ACTIONROGUELIKE_API ASCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-protected:
-
-	/* Primary Left Click Attack */
-	UPROPERTY(EditAnywhere, Category = "Attack|Primary Attack")
-	TSubclassOf<ASMagicProjectile> PrimaryProjectileClass;
-
-	UPROPERTY(EditAnywhere, Category = "Attack|Primary Attack")
-	UAnimMontage* PrimaryAttackAnim;
-
-	UPROPERTY(EditAnywhere, Category = "Attack|Primary Attack")
-	UParticleSystem* PrimaryProjectileSpawnEffect;
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	float PrimaryAttackSpawnDelay;
-
-	FTimerHandle TimerHandle_PrimaryAttack;
-
-	/* Black Hole Attack */
-	UPROPERTY(EditAnywhere, Category = "Attack|Black Hole Attack")
-	TSubclassOf<ASProjectile> BlackHoleProjectileClass;
-
-	UPROPERTY(EditAnywhere, Category = "Attack|Black Hole Attack")
-	UAnimMontage* BlackHoleAttackAnim;
-
-	UPROPERTY(EditAnywhere, Category = "Attack|Black Hole Attack")
-	UParticleSystem* BlackHoleSpawnEffect;
-	
-	UPROPERTY(EditAnywhere, Category = "Attack|Black Hole Attack")
-	float BlackHoleAttackSpawnDelay;
-
-	FTimerHandle TimerHandle_BlackHoleAttack;
-
-	/* Teleportation Attack */
-	UPROPERTY(EditAnywhere, Category = "Attack|Teleport Attack")
-	TSubclassOf<ASProjectile> TeleportAttackProjectileClass;
-
-	UPROPERTY(EditAnywhere, Category = "Attack|Teleport Attack")
-	UAnimMontage* TeleportAttackAnim;
-
-	UPROPERTY(EditAnywhere, Category = "Attack|Teleport Attack")
-	UParticleSystem* TeleportAttackSpawnEffect;
-	
-	UPROPERTY(EditAnywhere, Category = "Attack|Teleport Attack")
-	float TeleportAttackSpawnDelay;
-
-	FTimerHandle TimerHandle_TeleportAttack;
-
 public:
 	// Sets default values for this character's properties
 	ASCharacter();
 
+	UFUNCTION(Exec) // Console/cheat function
+	void HealSelf(float Amount = 100.0f);
+
 protected:
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USpringArmComponent* SpringArmComp;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UCameraComponent* CameraComp;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USInteractionComponent* InteractionComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	USAttributeComponent* AttributeComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USActionComponent* ActionComp;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -91,24 +51,19 @@ protected:
 
 	void MoveRight(float Value);
 
-	FRotator GetProjectileRotation(FVector SpawnLocation);
-
-	AActor* SpawnProjectile(TSubclassOf<AActor> ProjectileClass, FVector SpawnLocation, UParticleSystem* SpawnEffect);
-
 	/* Primary Left Click Attack */
 	void PrimaryAttack();
-
-	void PrimaryAttack_TimeElapsed();
 
 	/* Black Hole Attack */
 	void BlackHoleAttack();
 
-	void BlackHoleAttack_TimeElapsed();
-
 	/* Teleportation Attack */
 	void TeleportAttack();
 
-	void TeleportAttack_TimeElapsed();
+	/* Sprinting */
+	void SprintStart();
+
+	void SprintStop();
 
 	/* Interaction */
 	void PrimaryInteract();
@@ -118,6 +73,12 @@ protected:
 	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
 
 	virtual void PostInitializeComponents() override;
+
+	UPROPERTY(VisibleAnywhere, Category = "Effects")
+	FName TimeToHitParamName;
+
+	virtual FVector GetPawnViewLocation() const override;
+	
 
 public:
 	// Called every frame

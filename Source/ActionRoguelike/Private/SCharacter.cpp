@@ -3,6 +3,7 @@
 
 #include "SCharacter.h"
 
+#include "SActionComponent.h"
 #include "SAttributeComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
@@ -31,14 +32,19 @@ ASCharacter::ASCharacter()
 
 	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
 
+	ActionComp = CreateDefaultSubobject<USActionComponent>("ActionComp");
+
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	// makes the character able to rotate independent of the camera rotation
 	bUseControllerRotationYaw = false;
 
-	PrimaryAttackSpawnDelay = 0.2f;
-	BlackHoleAttackSpawnDelay = 0.2f;
-	TeleportAttackSpawnDelay = 0.2f;
+	TimeToHitParamName = "TimeToHit";
+}
+
+void ASCharacter::HealSelf(float Amount) /* = 100.0f*/
+{
+	AttributeComp->ApplyHealthChange(this, Amount);
 }
 
 void ASCharacter::PostInitializeComponents()
@@ -72,124 +78,33 @@ void ASCharacter::MoveRight(float Value)
 
 	FVector ControlRightVector = FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y);
 
-
 	AddMovementInput(ControlRightVector * Value);
 }
 
-FRotator ASCharacter::GetProjectileRotation(FVector SpawnLocation)
-{
-	// Here we do a LineTrace to get where the projectile should hit
-	// So we can use the result to calculate its rotation for later
-	FCollisionObjectQueryParams ObjectQueryParams;
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_PhysicsBody);
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_Vehicle);
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_Destructible);
-
-	FCollisionQueryParams CollisionQueryParams;
-	CollisionQueryParams.AddIgnoredActor(this);
-
-	FVector EyeLocation;
-	FRotator EyeRotation;
-	this->GetActorEyesViewPoint(EyeLocation, EyeRotation);
-
-	FVector Start = CameraComp->GetComponentLocation();
-
-	// Maybe the multiplier should be made into a variable but I think its okay like this
-	FVector End = Start + (CameraComp->GetForwardVector() * 10000.f);
-
-	FHitResult Hit;
-	bool bBlockingHit = GetWorld()->LineTraceSingleByObjectType(Hit, Start, End, ObjectQueryParams, CollisionQueryParams);
-
-	//DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 2.f, 0, 2.f);
-
-	FRotator ProjectileRotation;
-
-	if (bBlockingHit)
-	{
-		ProjectileRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, Hit.ImpactPoint);
-
-		DrawDebugSphere(GetWorld(), Hit.ImpactPoint, 30.f, 32, FColor::Red, false, 2.0f);
-	}
-	else
-	{
-		ProjectileRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, End);
-	}
-
-	return ProjectileRotation;
-}
-
-AActor* ASCharacter::SpawnProjectile(TSubclassOf<AActor> ProjectileClass, FVector SpawnLocation, UParticleSystem* SpawnEffect)
-{
-	// First we get the rotation of the projectile from our own function
-	FRotator ProjectileRotation = GetProjectileRotation(SpawnLocation);
-
-	// before spawning a projectile we play the particle effect for casting it
-	UGameplayStatics::SpawnEmitterAttached(SpawnEffect, GetMesh(), FName("Muzzle_01"), GetMesh()->GetSocketLocation("Muzzle_01"), FRotator(), EAttachLocation::KeepWorldPosition);
-
-	// Here we actually spawn the projectile with the rotation we derived
-	FTransform SpawnTransform = FTransform(ProjectileRotation, SpawnLocation);
-
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	SpawnParams.Instigator = this;
-
-	AActor* SpawnedProjectile = GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
-
-	return SpawnedProjectile;
-}
 
 void ASCharacter::PrimaryAttack()
 {
-	PlayAnimMontage(PrimaryAttackAnim);
-
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::PrimaryAttack_TimeElapsed, PrimaryAttackSpawnDelay);
-}
-
-void ASCharacter::PrimaryAttack_TimeElapsed()
-{
-	if (ensure(PrimaryProjectileClass))
-	{
-		FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-
-		SpawnProjectile(PrimaryProjectileClass, HandLocation, PrimaryProjectileSpawnEffect);
-	}
+	ActionComp->StartActionByName(this, "PrimaryAttack");
 }
 
 void ASCharacter::BlackHoleAttack()
 {
-	PlayAnimMontage(BlackHoleAttackAnim);
-
-	GetWorldTimerManager().SetTimer(TimerHandle_BlackHoleAttack, this, &ASCharacter::BlackHoleAttack_TimeElapsed, BlackHoleAttackSpawnDelay);
-}
-
-void ASCharacter::BlackHoleAttack_TimeElapsed()
-{
-	if (ensure(BlackHoleProjectileClass))
-	{
-		FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-
-		SpawnProjectile(BlackHoleProjectileClass, HandLocation, BlackHoleSpawnEffect);
-	}
+	ActionComp->StartActionByName(this, "BlackHoleAttack");
 }
 
 void ASCharacter::TeleportAttack()
 {
-	PlayAnimMontage(TeleportAttackAnim);
-
-	GetWorldTimerManager().SetTimer(TimerHandle_TeleportAttack, this, &ASCharacter::TeleportAttack_TimeElapsed, TeleportAttackSpawnDelay);
+	ActionComp->StartActionByName(this, "TeleportAttack");
 }
 
-void ASCharacter::TeleportAttack_TimeElapsed()
+void ASCharacter::SprintStart()
 {
-	if (ensure(TeleportAttackProjectileClass))
-	{
-		FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+	ActionComp->StartActionByName(this, "Sprint");
+}
 
-		SpawnProjectile(TeleportAttackProjectileClass, HandLocation, TeleportAttackSpawnEffect);
-	}
+void ASCharacter::SprintStop()
+{
+	ActionComp->StopActionByName(this, "Sprint");
 }
 
 void ASCharacter::PrimaryInteract()
@@ -205,7 +120,7 @@ void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent*
 	if(Delta < 0.0f)
 	{
 		// if damaged
-		GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
+		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
 
 
 		if (NewHealth <= 0.0f)
@@ -215,12 +130,11 @@ void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent*
 		}
 
 	}
+}
 
-	if(NewHealth <= 0.0f && Delta < 0.0f)
-	{
-		APlayerController* PC = Cast<APlayerController>(GetController());
-		DisableInput(PC);
-	}	
+FVector ASCharacter::GetPawnViewLocation() const
+{
+	return CameraComp->GetComponentLocation();
 }
 
 // Called every frame
@@ -247,5 +161,8 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("TeleportAttack", IE_Pressed, this, &ASCharacter::TeleportAttack);
 
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ASCharacter::PrimaryInteract);
+
+	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ASCharacter::SprintStart);
+	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ASCharacter::SprintStop);
 }
 
