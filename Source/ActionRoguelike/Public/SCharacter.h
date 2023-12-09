@@ -13,7 +13,6 @@ class USInteractionComponent;
 class UAnimMontage;
 class ASProjectile;
 class USAttributeComponent;
-class UCameraShakeBase;
 
 UCLASS()
 class ACTIONROGUELIKE_API ASCharacter : public ACharacter
@@ -21,12 +20,6 @@ class ACTIONROGUELIKE_API ASCharacter : public ACharacter
 	GENERATED_BODY()
 
 protected:
-
-	UPROPERTY(VisibleAnywhere, Category = "Effects")
-	FName TimeToHitParameterName;
-
-	UPROPERTY(VisibleAnywhere, Category = "Effects")
-	FName HandSocketName;
 
 	/* Primary Left Click Attack */
 	UPROPERTY(EditAnywhere, Category = "Attack|Primary Attack")
@@ -123,9 +116,6 @@ protected:
 	/* Health Stuff */
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Camera Shake")
-	TSubclassOf<UCameraShakeBase> ImpactCameraShake;
 
 	virtual void PostInitializeComponents() override;
 

@@ -39,9 +39,6 @@ ASCharacter::ASCharacter()
 	PrimaryAttackSpawnDelay = 0.2f;
 	BlackHoleAttackSpawnDelay = 0.2f;
 	TeleportAttackSpawnDelay = 0.2f;
-
-	TimeToHitParameterName = "TimeToHit";
-	HandSocketName = FName("Muzzle_01");
 }
 
 void ASCharacter::PostInitializeComponents()
@@ -130,7 +127,7 @@ AActor* ASCharacter::SpawnProjectile(TSubclassOf<AActor> ProjectileClass, FVecto
 	FRotator ProjectileRotation = GetProjectileRotation(SpawnLocation);
 
 	// before spawning a projectile we play the particle effect for casting it
-	UGameplayStatics::SpawnEmitterAttached(SpawnEffect, GetMesh(), HandSocketName, GetMesh()->GetSocketLocation(HandSocketName), FRotator(), EAttachLocation::KeepWorldPosition);
+	UGameplayStatics::SpawnEmitterAttached(SpawnEffect, GetMesh(), FName("Muzzle_01"), GetMesh()->GetSocketLocation("Muzzle_01"), FRotator(), EAttachLocation::KeepWorldPosition);
 
 	// Here we actually spawn the projectile with the rotation we derived
 	FTransform SpawnTransform = FTransform(ProjectileRotation, SpawnLocation);
@@ -155,7 +152,7 @@ void ASCharacter::PrimaryAttack_TimeElapsed()
 {
 	if (ensure(PrimaryProjectileClass))
 	{
-		FVector HandLocation = GetMesh()->GetSocketLocation(HandSocketName);
+		FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 
 		SpawnProjectile(PrimaryProjectileClass, HandLocation, PrimaryProjectileSpawnEffect);
 	}
@@ -172,7 +169,7 @@ void ASCharacter::BlackHoleAttack_TimeElapsed()
 {
 	if (ensure(BlackHoleProjectileClass))
 	{
-		FVector HandLocation = GetMesh()->GetSocketLocation(HandSocketName);
+		FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 
 		SpawnProjectile(BlackHoleProjectileClass, HandLocation, BlackHoleSpawnEffect);
 	}
@@ -189,7 +186,7 @@ void ASCharacter::TeleportAttack_TimeElapsed()
 {
 	if (ensure(TeleportAttackProjectileClass))
 	{
-		FVector HandLocation = GetMesh()->GetSocketLocation(HandSocketName);
+		FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 
 		SpawnProjectile(TeleportAttackProjectileClass, HandLocation, TeleportAttackSpawnEffect);
 	}
@@ -208,10 +205,8 @@ void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent*
 	if(Delta < 0.0f)
 	{
 		// if damaged
-		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParameterName, GetWorld()->TimeSeconds);
+		GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
 
-		// shake the world - any cameras between 5 and 2000 away will be shaked
-		UGameplayStatics::PlayWorldCameraShake(GetWorld(), ImpactCameraShake, GetActorLocation(), 0.1f, 2000.0f);
 
 		if (NewHealth <= 0.0f)
 		{

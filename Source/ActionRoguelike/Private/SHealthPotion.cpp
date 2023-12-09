@@ -16,10 +16,9 @@ void ASHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 
 	// heal the player but only if the health is less than max
 
-	// get player's health component
 	USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(InstigatorPawn->GetComponentByClass(USAttributeComponent::StaticClass()));
 
-	if(ensure(AttributeComp) && !AttributeComp->IsFullHealth()) 
+	if(AttributeComp)
 	{
 		if(AttributeComp->ApplyHealthChange(HealAmount))
 		{

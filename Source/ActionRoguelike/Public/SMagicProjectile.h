@@ -6,7 +6,7 @@
 #include "SProjectile.h"
 #include "SMagicProjectile.generated.h"
 
-
+class UCameraShakeBase;
 
 UCLASS()
 class ACTIONROGUELIKE_API ASMagicProjectile : public ASProjectile
@@ -38,6 +38,9 @@ protected:
 	FTimerHandle TimerHandle_DestroyProjectile;
 
 	void DestroyProjectile();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability|Shake")
+	TSubclassOf<UCameraShakeBase> ImpactCameraShake;
 
 public:	
 	// Called every frame
