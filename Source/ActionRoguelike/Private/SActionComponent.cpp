@@ -90,3 +90,10 @@ void USActionComponent::AddAction(TSubclassOf<USAction> ActionClass)
 
 }
 
+void USActionComponent::RemoveAction(USAction* ActionToRemove)
+{
+	if (ensure(ActionToRemove && !ActionToRemove->IsRunning()))
+
+	Actions.Remove(ActionToRemove);
+}
+
