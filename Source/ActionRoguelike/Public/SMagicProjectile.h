@@ -8,6 +8,7 @@
 #include "SMagicProjectile.generated.h"
 
 class UCameraShakeBase;
+class USActionEffect;
 
 UCLASS()
 class ACTIONROGUELIKE_API ASMagicProjectile : public ASProjectile
@@ -38,6 +39,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	FGameplayTag ParryTag;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	TSubclassOf<USActionEffect> BurningActionClass;
 
 
 	FTimerHandle TimerHandle_DestroyProjectile;

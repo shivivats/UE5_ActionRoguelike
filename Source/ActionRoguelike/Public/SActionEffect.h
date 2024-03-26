@@ -16,6 +16,8 @@ class ACTIONROGUELIKE_API USActionEffect : public USAction
 
 public:
 
+	USActionEffect();
+
 	virtual void StartAction_Implementation(AActor* Instigator) override;
 
 	virtual void StopAction_Implementation(AActor* Instigator) override;

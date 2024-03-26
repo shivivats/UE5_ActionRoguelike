@@ -9,6 +9,7 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "SActionEffect.h"
 
 ASMagicProjectile::ASMagicProjectile()
 {
@@ -58,6 +59,11 @@ void ASMagicProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 			}
 
 			GetWorldTimerManager().SetTimer(TimerHandle_DestroyProjectile, this, &ASMagicProjectile::DestroyProjectile, DestroyDelay);
+
+			if (ActionComp)
+			{
+				ActionComp->AddAction(BurningActionClass, GetInstigator());
+			}
 		}
 
 		DrawDebugSphere(GetWorld(), GetActorLocation(), 50.f, 12, FColor::Blue, 1.f, 0.f);

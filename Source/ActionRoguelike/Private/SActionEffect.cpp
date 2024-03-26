@@ -4,6 +4,11 @@
 #include "SActionEffect.h"
 #include "SActionComponent.h"
 
+USActionEffect::USActionEffect()
+{
+	bAutoStart = true;
+}
+
 void USActionEffect::StartAction_Implementation(AActor* Instigator)
 {
 	Super::StartAction_Implementation(Instigator);

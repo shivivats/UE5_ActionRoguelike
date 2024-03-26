@@ -20,7 +20,7 @@ public:
 	USActionComponent();
 
 	UFUNCTION(BlueprintCallable, Category="Actions")
-	void AddAction(TSubclassOf<USAction> ActionClass);
+	void AddAction(TSubclassOf<USAction> ActionClass, AActor* Instigator);
 
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 	void RemoveAction(USAction* ActionToRemove);
