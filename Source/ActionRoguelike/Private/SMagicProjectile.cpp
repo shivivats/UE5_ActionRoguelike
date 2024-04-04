@@ -28,14 +28,17 @@ void ASMagicProjectile::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASMagicProjectile::OnBeginOverlap);
+	// More consistent to bind here compared to Constructor which may fail to bind if Blueprint was created before adding this binding (or when using hotreload)
+	// PostInitializeComponent is the preferred way of binding any events.
+	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASMagicProjectile::OnActorOverlap);
 }
 
-void ASMagicProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor && OtherActor != GetInstigator())
 	{
 		USActionComponent* ActionComp = Cast<USActionComponent>(OtherActor->GetComponentByClass(USActionComponent::StaticClass()));
+		// Parrying ability
 		if(ActionComp && ActionComp->ActiveGameplayTags.HasTag(ParryTag))
 		{
 			// get the movement comp and invert the projectile velocity
@@ -47,10 +50,12 @@ void ASMagicProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 			return;
 		}
 
+		FTimerHandle TimerHandle_DestroyProjectile;
 		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
 		// Apply Damage & Impulse - use the static fn we have instead of just checking if AttributeComp is valid
 		if (USGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, Damage, SweepResult))
 		{
+
 			AttributeComp->ApplyHealthChange(GetInstigator(), -1.0f * Damage);
 
 			if(GetWorldTimerManager().IsTimerActive(TimerHandle_DestroyProjectile))
@@ -66,7 +71,8 @@ void ASMagicProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 			}
 		}
 
-		DrawDebugSphere(GetWorld(), GetActorLocation(), 50.f, 12, FColor::Blue, 1.f, 0.f);
+		//DrawDebugSphere(GetWorld(), GetActorLocation(), 50.f, 12, FColor::Blue, 1.f, 0.f); //TODO: maybe bind this to the console var for debug things as well
+
 
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, SweepResult.ImpactPoint, GetActorRotation());
 

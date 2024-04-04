@@ -28,6 +28,8 @@ ASAICharacter::ASAICharacter()
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned; // make sure the AI gets a controller assigned to it by default
 
+	// This is needed to make sure the projectile hits the mesh and not the capsule component
+	// That's needed to make the character smash away upon death
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
 	GetMesh()->SetGenerateOverlapEvents(true);
 
