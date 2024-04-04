@@ -196,7 +196,8 @@ void ASGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 	ASCharacter* Player = Cast<ASCharacter>(VictimActor);
 	if (Player)
 	{
-		FTimerHandle TimerHandle_RespawnDelay;
+		// make the timer local here instead of a class member since otherwise there will be one instance of the timer shared across all player kills, and that's not good
+		FTimerHandle TimerHandle_RespawnDelay; 
 
 		FTimerDelegate Delegate;
 		Delegate.BindUFunction(this, "RespawnPlayerElapsed", Player->GetController());
