@@ -33,6 +33,12 @@ protected:
 
 	void Interact_Implementation(APawn* InstigatorPawn) override;
 
+	UPROPERTY(ReplicatedUsing="OnRep_LidOpened", BlueprintReadOnly)
+	bool bLidOpened;
+
+	UFUNCTION()
+	void OnRep_LidOpened();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
