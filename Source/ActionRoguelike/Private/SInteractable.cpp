@@ -12,6 +12,8 @@ ASInteractable::ASInteractable()
 
 	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BaseMesh"));
 	RootComponent = BaseMesh;
+
+	SetReplicates(true);
 }
 
 void ASInteractable::Interact_Implementation(APawn* InstigatorPawn)

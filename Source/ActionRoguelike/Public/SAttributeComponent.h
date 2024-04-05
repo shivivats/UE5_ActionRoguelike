@@ -29,16 +29,20 @@ public:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes|Health")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = "Attributes|Health")
 	float Health;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes|Health")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = "Attributes|Health")
 	float HealthMin;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes|Health")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = "Attributes|Health")
 	float HealthMax;
 
 	// Stamina, Strength, ...
+	
+	// @fixme: eventually we should make it Unreliable once its a purely cosmetic function
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastHealthChanged(AActor* InstigatorActor, float NewHealth, float Delta);
 
 public:
 

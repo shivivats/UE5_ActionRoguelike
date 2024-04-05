@@ -28,6 +28,8 @@ ASProjectile::ASProjectile()
 
 	AudioLoopComp = CreateDefaultSubobject<UAudioComponent>("AudioLoopComp");
 	AudioLoopComp->SetupAttachment(RootComponent);	
+
+	SetReplicates(true);
 }
 
 // Called when the game starts or when spawned

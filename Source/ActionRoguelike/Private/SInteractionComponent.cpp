@@ -72,7 +72,7 @@ void USInteractionComponent::FindBestInteractable()
 
 	FColor LineColor = bBlockingHit ? FColor::Green : FColor::Red;
 
-	FocusedActor = nullptr; // clear the focused actor before checking for hit everytime
+	FocusedActor = nullptr; // clear the focused actor before checking for hit every time
 
 	for (FHitResult Hit : Hits)
 	{
@@ -98,7 +98,7 @@ void USInteractionComponent::FindBestInteractable()
 	{
 		// make a widget instance of the user widget
 
-		// make sure that the widget doesnt already exist and the widget class is assigned
+		// make sure that the widget doesn't already exist and the widget class is assigned
 		if (DefaultWidgetInstance == nullptr && ensure(DefaultWidgetClass))
 		{
 			DefaultWidgetInstance = CreateWidget<USWorldUserWidget>(GetWorld(), DefaultWidgetClass);
@@ -108,7 +108,7 @@ void USInteractionComponent::FindBestInteractable()
 		{
 			DefaultWidgetInstance->AttachedActor = FocusedActor;
 
-			// make sure we arent already in the viewport
+			// make sure we aren't already in the viewport
 			if (!DefaultWidgetInstance->IsInViewport()) 
 			{
 				DefaultWidgetInstance->AddToViewport();

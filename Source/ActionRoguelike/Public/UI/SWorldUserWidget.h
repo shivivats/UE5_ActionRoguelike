@@ -27,8 +27,8 @@ protected:
 	FVector WorldOffset; // An offset that we add for more customisability in the position of the individual children of this widget
 
 public:
-
-	UPROPERTY(BlueprintReadOnly, Category = "UI")
+	// Expose on Spawn: whenever we create a new UserWidget, we will expose this as an input pin in blueprint
+	UPROPERTY(BlueprintReadWrite, Category = "UI", meta = (ExposeOnSpawn=true))
 	AActor* AttachedActor;
 
 };
